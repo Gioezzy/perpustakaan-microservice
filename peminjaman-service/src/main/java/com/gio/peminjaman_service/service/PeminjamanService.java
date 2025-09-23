@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -19,7 +21,10 @@ public class PeminjamanService {
   private PeminjamanRepository peminjamanRepository;
 
   @Autowired
-  public RestTemplate restTemplate;
+  private RestTemplate restTemplate;
+
+  @Autowired
+  private DiscoveryClient discoveryClient;
 
   public List<Peminjaman> getAllPeminjaman(){
     return peminjamanRepository.findAll();
@@ -37,9 +42,11 @@ public class PeminjamanService {
       return null;
     }
 
-    Anggota anggota = restTemplate.getForObject("http://localhost:8081/api/anggota/" + peminjaman.getAnggotaId(), Anggota.class);
+    ServiceInstance serviceInstance = discoveryClient.getInstances("API-GATEWAY-PUSTAKA").get(0);
 
-    Buku buku = restTemplate.getForObject("http://localhost:8082/api/buku/" + peminjaman.getBukuId(), Buku.class);
+    Anggota anggota = restTemplate.getForObject(serviceInstance.getUri() + "/api/anggota/" + peminjaman.getAnggotaId(), Anggota.class);
+
+    Buku buku = restTemplate.getForObject(serviceInstance.getUri() + "/api/buku/" + peminjaman.getBukuId(), Buku.class);
 
     ResponseTemplate vo = new ResponseTemplate();
     vo.setPeminjaman(peminjaman);
