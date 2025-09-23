@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,14 +23,19 @@ import com.gio.pengembalian_service.vo.ResponseTemplate;
 @Service
 public class PengembalianService {
 
-    private final PengembalianRepository pengembalianRepository;
+    @Autowired
+    private PengembalianRepository pengembalianRepository;
 
     @Autowired
-    public RestTemplate restTemplate;
+    private RestTemplate restTemplate;
 
-    public PengembalianService(PengembalianRepository pengembalianRepository) {
-        this.pengembalianRepository = pengembalianRepository;
-    }
+    @Autowired
+    private DiscoveryClient discoveryClient;
+
+
+    // public PengembalianService(PengembalianRepository pengembalianRepository) {
+    //     this.pengembalianRepository = pengembalianRepository;
+    // }
 
     public List<Pengembalian> getAllPengembalians() {
         return pengembalianRepository.findAll();
@@ -60,13 +67,6 @@ public class PengembalianService {
         return pengembalianRepository.save(pengembalian);
     }
 
-    public Peminjaman getPeminjaman(Long id) {
-        try {
-            return restTemplate.getForObject("http://localhost:8083/api/peminjaman/" + id, Peminjaman.class);
-        } catch (Exception e) {
-            return null;
-        }
-    }
 
     public void deletePengembalian(Long id) {
         pengembalianRepository.deleteById(id);
@@ -80,9 +80,11 @@ public class PengembalianService {
             return null;
         }
 
-        Peminjaman peminjaman = restTemplate.getForObject("http://localhost:8083/api/peminjaman/" + pengembalian.getPeminjamanId(), Peminjaman.class);
-        Anggota anggota = restTemplate.getForObject("http://localhost:8081/api/anggota/" + peminjaman.getAnggotaId(), Anggota.class);
-        Buku buku = restTemplate.getForObject("http://localhost:8082/api/buku/" + peminjaman.getBukuId(), Buku.class);
+        ServiceInstance serviceInstance = discoveryClient.getInstances("API-GATEWAY-PUSTAKA").get(0);
+
+        Peminjaman peminjaman = restTemplate.getForObject(serviceInstance.getUri() + "/api/peminjaman/" + pengembalian.getPeminjamanId(), Peminjaman.class);
+        Anggota anggota = restTemplate.getForObject(serviceInstance.getUri() + "/api/anggota/" + peminjaman.getAnggotaId(), Anggota.class);
+        Buku buku = restTemplate.getForObject(serviceInstance.getUri() + "/api/buku/" + peminjaman.getBukuId(), Buku.class);
 
         ResponseTemplate vo = new ResponseTemplate();
         vo.setPeminjaman(peminjaman);
@@ -91,5 +93,15 @@ public class PengembalianService {
 
         responseTemplates.add(vo);
         return responseTemplates;
+    }
+
+    public Peminjaman getPeminjaman(Long id) {
+        try {
+            ServiceInstance serviceInstance = discoveryClient.getInstances("API-GATEWAY-PUSTAKA").get(0);
+            Peminjaman peminjaman = restTemplate.getForObject(serviceInstance.getUri() + "/api/peminjaman/" + id, Peminjaman.class);
+            return peminjaman;        
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
