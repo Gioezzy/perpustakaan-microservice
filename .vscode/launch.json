@@ -2,6 +2,18 @@
   "configurations": [
     {
       "type": "java",
+      "name": "ApiGatewayPustakaApplication",
+      "request": "launch",
+      "mainClass": "com.gio.api_gateway_pustaka.ApiGatewayPustakaApplication"
+    },
+    {
+      "type": "java",
+      "name": "PustakaApiGatewayApplication",
+      "request": "launch",
+      "mainClass": "com.gio.pustaka_api_gateway.PustakaApiGatewayApplication"
+    },
+    {
+      "type": "java",
       "name": "Spring Boot-AnggotaServiceApplication<anggota-service>",
       "request": "launch",
       "cwd": "${workspaceFolder}",
@@ -28,7 +40,8 @@
       "mainClass": "com.gio.eureka_server.EurekaServerApplication",
       "projectName": "eureka-server",
       "args": "",
-      "envFile": "${workspaceFolder}/.env"
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=40649 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=eureka-server"
     },
     {
       "type": "java",
@@ -47,6 +60,16 @@
       "cwd": "${workspaceFolder}",
       "mainClass": "com.gio.pengembalian_service.PengembalianServiceApplication",
       "projectName": "pengembalian-service",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-ApiGatewayPustakaApplication<api-gateway-pustaka>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.gio.api_gateway_pustaka.ApiGatewayPustakaApplication",
+      "projectName": "api-gateway-pustaka",
       "args": "",
       "envFile": "${workspaceFolder}/.env"
     }
