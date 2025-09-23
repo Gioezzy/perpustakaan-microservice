@@ -1,0 +1,37 @@
+# YAML Template.
+---
+server:
+  port: 9000
+
+spring:
+  application:
+    name: api-gateway-pustaka
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: anggota-service
+            uri: lb://ANGGOTA-SERVICE
+            predicates:
+              - Path=/api/anggota/**
+          - id: buku-service
+            uri: lb://BUKU-SERVICE
+            predicates:
+              - Path=/api/buku/**
+          - id: peminjaman-service
+            uri: lb://PEMINJAMAN-SERVICE
+            predicates:
+              - Path=/api/peminjaman/**
+          - id: pengembalian-service
+            uri: lb://PENGEMBALIAN-SERVICE
+            predicates:
+              - Path=/api/pengembalian/**
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
