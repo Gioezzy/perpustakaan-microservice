@@ -87,10 +87,11 @@ public class PengembalianService {
         Buku buku = restTemplate.getForObject(serviceInstance.getUri() + "/api/buku/" + peminjaman.getBukuId(), Buku.class);
 
         ResponseTemplate vo = new ResponseTemplate();
+        vo.setPengembalian(pengembalian);
         vo.setPeminjaman(peminjaman);
         vo.setAnggota(anggota);
         vo.setBuku(buku);
-
+        
         responseTemplates.add(vo);
         return responseTemplates;
     }
