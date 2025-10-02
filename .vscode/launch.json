@@ -20,7 +20,8 @@
       "mainClass": "com.gio.anggota_service.AnggotaServiceApplication",
       "projectName": "anggota-service",
       "args": "",
-      "envFile": "${workspaceFolder}/.env"
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=40321 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=anggota-service"
     },
     {
       "type": "java",
@@ -30,7 +31,8 @@
       "mainClass": "com.gio.buku_service.BukuServiceApplication",
       "projectName": "buku-service",
       "args": "",
-      "envFile": "${workspaceFolder}/.env"
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=42053 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=buku-service"
     },
     {
       "type": "java",
@@ -51,7 +53,8 @@
       "mainClass": "com.gio.peminjaman_service.PeminjamanServiceApplication",
       "projectName": "peminjaman-service",
       "args": "",
-      "envFile": "${workspaceFolder}/.env"
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=33051 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=peminjaman-service"
     },
     {
       "type": "java",
@@ -61,7 +64,8 @@
       "mainClass": "com.gio.pengembalian_service.PengembalianServiceApplication",
       "projectName": "pengembalian-service",
       "args": "",
-      "envFile": "${workspaceFolder}/.env"
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=33681 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=pengembalian-service"
     },
     {
       "type": "java",
@@ -70,6 +74,27 @@
       "cwd": "${workspaceFolder}",
       "mainClass": "com.gio.api_gateway_pustaka.ApiGatewayPustakaApplication",
       "projectName": "api-gateway-pustaka",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=33735 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=api-gateway-pustaka"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-RabbitmqPengembalianServiceApplication<rabbitmq-pengembalian-service>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.gio.rabbitmq_pengembalian_service.RabbitmqPengembalianServiceApplication",
+      "projectName": "rabbitmq-pengembalian-service",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-RabbitmqPeminjamanServiceApplication<rabbitmq-peminjaman-service>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.gio.rabbitmq_peminjaman_service.RabbitmqPeminjamanServiceApplication",
+      "projectName": "rabbitmq-peminjaman-service",
       "args": "",
       "envFile": "${workspaceFolder}/.env"
     }
