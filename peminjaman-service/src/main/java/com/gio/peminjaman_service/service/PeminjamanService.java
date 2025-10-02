@@ -3,7 +3,11 @@ package com.gio.peminjaman_service.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Service;
@@ -17,6 +21,17 @@ import com.gio.peminjaman_service.vo.ResponseTemplate;
 
 @Service
 public class PeminjamanService {
+
+  private final RabbitTemplate rabbitTemplate;
+
+  private static final Logger log = LoggerFactory.getLogger(PeminjamanService.class);
+
+  @Value("${app.rabbitmq-peminjaman.exchange}")
+  private String exchange;
+
+  @Value("${app.rabbitmq-peminjaman.routing-key}")
+  private String routingKey;
+
   @Autowired
   private PeminjamanRepository peminjamanRepository;
 
@@ -25,6 +40,10 @@ public class PeminjamanService {
 
   @Autowired
   private DiscoveryClient discoveryClient;
+
+  public PeminjamanService(RabbitTemplate rabbitTemplate) {
+    this.rabbitTemplate = rabbitTemplate;
+  }
 
   public List<Peminjaman> getAllPeminjaman(){
     return peminjamanRepository.findAll();
@@ -59,7 +78,13 @@ public class PeminjamanService {
   }
 
   public Peminjaman createPeminjaman(Peminjaman peminjaman){
-    return peminjamanRepository.save(peminjaman);
+    Peminjaman savedPeminjaman = peminjamanRepository.save(peminjaman);
+    rabbitTemplate.convertAndSend(exchange, routingKey, savedPeminjaman);
+
+    log.info("📩 Message sent to exchange [{}] with routing key [{}], Payload: {}", 
+                exchange, routingKey, savedPeminjaman);
+                
+    return savedPeminjaman;
   }
 
   public void deletePeminjaman(Long id){
