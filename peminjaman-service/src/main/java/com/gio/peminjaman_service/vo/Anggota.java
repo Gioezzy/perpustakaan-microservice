@@ -5,16 +5,18 @@ public class Anggota {
   private String nim;
   private String nama;
   private String alamat;
+  private String email;
   private String jenis_kelamin;
 
   public Anggota(){
     
   }
-  public Anggota(Long id, String nim, String nama, String alamat, String jenis_kelamin) {
+  public Anggota(Long id, String nim, String nama, String alamat, String email, String jenis_kelamin) {
     this.id = id;
     this.nim = nim;
     this.nama = nama;
     this.alamat = alamat;
+    this.email = email;
     this.jenis_kelamin = jenis_kelamin;
   }
 
@@ -41,6 +43,12 @@ public class Anggota {
   }
   public void setAlamat(String alamat) {
     this.alamat = alamat;
+  }
+  public String getEmail() {
+    return email;
+  }
+  public void setEmail(String email) {
+    this.email = email;
   }
   public String getJenis_kelamin() {
     return jenis_kelamin;
