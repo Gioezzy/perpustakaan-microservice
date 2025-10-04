@@ -68,7 +68,7 @@ Base URL `http://localhost:8081/`
 | GET    | `/api/anggota`              | Mendapatkan semua anggota          |
 | GET    | `/api/anggota/{id}`         | Mendapatkan anggota berdasarkan ID |
 | DELETE | `/api/anggota/{id}`         | Menghapus anggota berdasarkan ID   |
-| GET    | `/api/anggota/product/{id}` | Mendapatkan anggota + product by ID |
+| GET    | `/api/anggota/detail/{id}` | Mendapatkan anggota + detail by ID |
 
 
 ```json
@@ -91,7 +91,7 @@ Base URL `http://localhost:8082/`
 | GET    | `/api/buku`              | Mendapatkan semua buku          |
 | GET    | `/api/buku/{id}`         | Mendapatkan buku berdasarkan ID |
 | DELETE | `/api/buku/{id}`         | Menghapus buku berdasarkan ID   |
-| GET    | `/api/buku/product/{id}` | Mendapatkan buku + product by ID |
+| GET    | `/api/buku/detail/{id}` | Mendapatkan buku + detail by ID |
 
 ```json
 {
@@ -112,7 +112,7 @@ Base URL `http://localhost:8083/`
 | GET    | `/api/peminjaman`              | Mendapatkan semua peminjaman          |
 | GET    | `/api/peminjaman/{id}`         | Mendapatkan peminjaman berdasarkan ID |
 | DELETE | `/api/peminjaman/{id}`         | Menghapus peminjaman berdasarkan ID   |
-| GET    | `/api/peminjaman/product/{id}` | Mendapatkan peminjaman + product by ID |
+| GET    | `/api/peminjaman/detail/{id}` | Mendapatkan peminjaman + detail by ID |
 
 ```json
 {
@@ -133,7 +133,7 @@ Base URL `http://localhost:8084/`
 | GET    | `/api/pengembalian`              | Mendapatkan semua pengembalian          |
 | GET    | `/api/pengembalian/{id}`         | Mendapatkan pengembalian berdasarkan ID |
 | DELETE | `/api/pengembalian/{id}`         | Menghapus pengembalian berdasarkan ID   |
-| GET    | `/api/pengembalian/product/{id}` | Mendapatkan pengembalian + product by ID |
+| GET    | `/api/pengembalian/detail/{id}` | Mendapatkan pengembalian + detail by ID |
 
 ```json
 {
