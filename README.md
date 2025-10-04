@@ -13,19 +13,22 @@ Tujuannya adalah untuk mengelola data anggota, buku, peminjaman, dan pengembalia
 - CRUD untuk data **Anggota**  
 - CRUD untuk data **Buku**  
 - Peminjaman buku oleh anggota  
-- Pengembalian buku & perhitungan denda  
+- Pengembalian buku & perhitungan denda 
+- Service untuk menangani message-broker dengan RabbitMQ 
 
 ---
 
 ## 📂 Struktur Project
 ```
 perpustakaan-microservice/
-│── eureka-server/              # Service registry
-│── api-gateway-pustaka/        # API Gateway
-│── anggota-service/            # Service untuk data anggota
-│── buku-service/               # Service untuk data buku
-│── peminjaman-service/         # Service untuk data peminjaman
-│── pengembalian-service/       # Service untuk data pengembalian
+│── eureka-server/                     # Service registry
+│── api-gateway-pustaka/               # API Gateway
+│── anggota-service/                   # Service untuk data anggota
+│── buku-service/                      # Service untuk data buku
+│── peminjaman-service/                # Service untuk data peminjaman
+│── pengembalian-service/              # Service untuk data pengembalian
+│── rabbitmq-peminjaman-service/       # Service untuk message-broker peminjaman
+│── rabbitmq-pengembalian-service/     # Service untuk message-broker pengembalian
 └── README.md
 ```
 
@@ -40,7 +43,7 @@ perpustakaan-microservice/
    ```bash
    mvn spring-boot:run -pl api-gateway-pustaka
    ```
-3. Jalankan service lainnya:  
+3. Jalankan service utama:  
    ```bash
    mvn spring-boot:run -pl anggota-service
    mvn spring-boot:run -pl buku-service
@@ -48,6 +51,11 @@ perpustakaan-microservice/
    mvn spring-boot:run -pl pengembalian-service
    ```
 
+4. Jalankan service RabbitMQ
+    ```
+    mvn spring-boot:run -pl rabbitmq-peminjaman-service
+    mvn spring-boot:run -pl rabbitmq-pengembalian-service
+    ```
 ---
 
 ## 📌 Endpoint & Contoh Request
@@ -68,6 +76,7 @@ Base URL `http://localhost:8081/`
   "nim": "20250101",
   "nama": "Giovanni Yuda",
   "alamat": "Jl. Merdeka No. 123",
+  "email" : "youremail@example.com"
   "jenis_kelamin": "Laki-laki"
 }
 ```
@@ -143,5 +152,6 @@ Base URL `http://localhost:8084/`
 - **Spring Cloud Netflix Eureka**  
 - **Spring Cloud Gateway**  
 - **Spring Data JPA**  
+- **RabbitMQ**
 - **H2 Database**  
 - **Maven**  
