@@ -7,7 +7,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Service;
@@ -23,6 +27,16 @@ import com.gio.pengembalian_service.vo.ResponseTemplate;
 @Service
 public class PengembalianService {
 
+    private final RabbitTemplate rabbitTemplate;
+
+    private static final Logger log = LoggerFactory.getLogger(PengembalianService.class);
+
+    @Value("${app.rabbitmq-pengembalian.exchange}")
+    private String exchange;
+
+    @Value("${app.rabbitmq-pengembalian.routing-key}")
+    private String routingKey;
+
     @Autowired
     private PengembalianRepository pengembalianRepository;
 
@@ -32,10 +46,9 @@ public class PengembalianService {
     @Autowired
     private DiscoveryClient discoveryClient;
 
-
-    // public PengembalianService(PengembalianRepository pengembalianRepository) {
-    //     this.pengembalianRepository = pengembalianRepository;
-    // }
+    public PengembalianService(RabbitTemplate rabbitTemplate){
+        this.rabbitTemplate = rabbitTemplate;
+    }
 
     public List<Pengembalian> getAllPengembalians() {
         return pengembalianRepository.findAll();
@@ -63,6 +76,9 @@ public class PengembalianService {
 
         pengembalian.setTerlambat(terlambat + " Hari");
         pengembalian.setDenda(denda);
+
+        rabbitTemplate.convertAndSend(exchange, routingKey, pengembalian);
+        log.info("Message sent to exchange [{}] with routing key [{}], Payload: {}", exchange, routingKey, pengembalian);
 
         return pengembalianRepository.save(pengembalian);
     }
