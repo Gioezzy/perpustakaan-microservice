@@ -35,25 +35,43 @@ public class PeminjamanCostumerService {
 
     @Transactional
     public void receiveOrder(@Payload Peminjaman peminjaman) {
-        System.out.println("Sending receive to email: " + peminjaman.getId());
-        
+        System.out.println("📩 Received message from queue with ID: " + peminjaman.getId());
+
+        if (peminjaman.getId() == null) {
+            System.err.println("⚠️ ID peminjaman null, email tidak dikirim.");
+            return;
+        }
+
         try {
-            ServiceInstance serviceInstance = discoveryClient.getInstances("API-GATEWAY-PUSTAKA").get(0);
-            ResponseTemplate[] response = restTemplate.getForObject(serviceInstance.getUri() + "/api/peminjaman/" + peminjaman.getId() + "/detail", ResponseTemplate[].class);
+            ServiceInstance serviceInstance = discoveryClient
+                    .getInstances("API-GATEWAY-PUSTAKA")
+                    .get(0);
+
+            String url = serviceInstance.getUri() + "/api/peminjaman/" + peminjaman.getId() + "/detail";
+            ResponseTemplate[] response = restTemplate.getForObject(url, ResponseTemplate[].class);
+
+            if (response == null || response.length == 0) {
+                System.err.println("⚠️ Data peminjaman tidak ditemukan untuk ID: " + peminjaman.getId());
+                return;
+            }
+
             ResponseTemplate dataPeminjaman = response[0];
             Anggota anggota = dataPeminjaman.getAnggota();
             String email = anggota.getEmail();
 
-            System.out.println("Sending notification to email: " + email);
+            System.out.println("✉️ Sending notification to email: " + email);
+
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setFrom(from);
             mailMessage.setTo(email);
-            mailMessage.setText(dataPeminjaman.sendMailMessage());
             mailMessage.setSubject("Konfirmasi Peminjaman Buku Berhasil");
+            mailMessage.setText(dataPeminjaman.sendMailMessage());
             javaMailSender.send(mailMessage);
+
+            System.out.println("✅ Email berhasil dikirim ke " + email);
+
         } catch (Exception e) {
-            System.out.println(e.toString());
+            System.err.println("❌ Error saat mengirim email peminjaman: " + e.getMessage());
         }
-    
     }
 }
