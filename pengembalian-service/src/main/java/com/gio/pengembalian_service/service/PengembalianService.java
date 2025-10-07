@@ -77,10 +77,12 @@ public class PengembalianService {
         pengembalian.setTerlambat(terlambat + " Hari");
         pengembalian.setDenda(denda);
 
-        rabbitTemplate.convertAndSend(exchange, routingKey, pengembalian);
-        log.info("Message sent to exchange [{}] with routing key [{}], Payload: {}", exchange, routingKey, pengembalian);
+        Pengembalian saved = pengembalianRepository.save(pengembalian);
 
-        return pengembalianRepository.save(pengembalian);
+        rabbitTemplate.convertAndSend(exchange, routingKey, saved);
+        log.info("Message sent to exchange [{}] with routing key [{}], Payload: {}", exchange, routingKey, saved);
+
+        return saved;
     }
 
 
