@@ -35,11 +35,17 @@ public class PengembalianConsumerService {
 
   @Transactional
   public void receiveOrder(@Payload Pengembalian pengembalian){
-    System.out.println("Sending receive to email: " + pengembalian.getId());
+    System.out.println("📩 Received message from queue with ID: " + pengembalian.getId());
 
     try{
       ServiceInstance serviceInstance = discoveryClient.getInstances("API-GATEWAY-PUSTAKA").get(0);
       ResponseTemplate[] response = restTemplate.getForObject(serviceInstance.getUri() + "/api/pengembalian/" + pengembalian.getId() + "/detail", ResponseTemplate[].class);
+
+      if (response == null || response.length == 0) {
+        System.err.println("⚠️ Data pengembalian tidak ditemukan untuk ID: " + pengembalian.getId());
+        return;
+      }
+
       ResponseTemplate dataPengembalian = response[0];
       Anggota anggota = dataPengembalian.getAnggota();
       String email = anggota.getEmail();
@@ -51,8 +57,11 @@ public class PengembalianConsumerService {
       mailMessage.setText(dataPengembalian.sendMailMessage());
       mailMessage.setSubject("Konfirmasi Pengembalian Buku Berhasil");
       javaMailSender.send(mailMessage);
+
+      System.out.println("✅ Email berhasil dikirim ke " + email);
+      
     }catch (Exception e){
-      System.out.println(e.toString());
+      System.err.println("❌ Error saat mengirim email pengembalian: " + e.getMessage());
     }
   }
 }
