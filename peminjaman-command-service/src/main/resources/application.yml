@@ -1,0 +1,69 @@
+server:
+  port: 8087
+spring:
+  application:
+    name: peminjaman-command-service
+
+  datasource:
+    url: jdbc:h2:file:./target/h2db/db/peminjaman_command;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        '[format_sql]': true
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    template:
+      exchange: peminjaman.exchange
+    listener:
+      simple:
+        default-requeue-rejected: false
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+app:
+  rabbitmq-peminjaman:
+    queue: peminjaman.queue
+    exchange: peminjaman.exchange
+    routing-key: peminjaman.routing.key
+  mail:
+    host: "smtp.gmail.com"
+    port: 587
+    username: "your email"
+    from: "your email"
+    password: "your password"
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: smtp.gmail.com
+
+logging:
+  level:
+    '[com.gio.rabbitmq_service]': DEBUG
+    '[org.springframework.mail.javamail]': DEBUG
+    '[jakarta.mail]': DEBUG
