@@ -2,6 +2,12 @@
   "configurations": [
     {
       "type": "java",
+      "name": "PeminjamanQueryServiceApplication",
+      "request": "launch",
+      "mainClass": "com.gio.peminjaman_query_service.PeminjamanQueryServiceApplication"
+    },
+    {
+      "type": "java",
       "name": "ApiGatewayPustakaApplication",
       "request": "launch",
       "mainClass": "com.gio.api_gateway_pustaka.ApiGatewayPustakaApplication"
@@ -95,6 +101,27 @@
       "cwd": "${workspaceFolder}",
       "mainClass": "com.gio.rabbitmq_peminjaman_service.RabbitmqPeminjamanServiceApplication",
       "projectName": "rabbitmq-peminjaman-service",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=41779 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=rabbitmq-peminjaman-service"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-PeminjamanCommandServiceApplication<peminjaman-command-service>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.gio.peminjaman_command_service.PeminjamanCommandServiceApplication",
+      "projectName": "peminjaman-command-service",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-PeminjamanQueryServiceApplication<peminjaman-query-service>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.gio.peminjaman_query_service.PeminjamanQueryServiceApplication",
+      "projectName": "peminjaman-query-service",
       "args": "",
       "envFile": "${workspaceFolder}/.env"
     }
