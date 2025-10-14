@@ -47,7 +47,7 @@ public class PeminjamanCostumerService {
                     .getInstances("API-GATEWAY-PUSTAKA")
                     .get(0);
 
-            String url = serviceInstance.getUri() + "/api/peminjaman/" + peminjaman.getId() + "/detail";
+            String url = serviceInstance.getUri() + "/api/peminjaman/query/" + peminjaman.getId() + "/detail";
             ResponseTemplate[] response = restTemplate.getForObject(url, ResponseTemplate[].class);
 
             if (response == null || response.length == 0) {
