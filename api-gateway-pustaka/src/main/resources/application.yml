@@ -18,10 +18,14 @@ spring:
             uri: lb://BUKU-SERVICE
             predicates:
               - Path=/api/buku/**
-          - id: peminjaman-service
-            uri: lb://PEMINJAMAN-SERVICE
+          - id: peminjaman-command-service
+            uri: lb://PEMINJAMAN-COMMAND-SERVICE
             predicates:
-              - Path=/api/peminjaman/**
+              - Path=/api/peminjaman/command/**
+          - id: peminjaman-query-service
+            uri: lb://PEMINJAMAN-QUERY-SERVICE
+            predicates:
+              - Path=/api/peminjaman/query/**
           - id: pengembalian-service
             uri: lb://PENGEMBALIAN-SERVICE
             predicates:
