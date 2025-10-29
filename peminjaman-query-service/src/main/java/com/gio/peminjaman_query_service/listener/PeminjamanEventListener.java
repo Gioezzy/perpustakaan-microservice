@@ -11,21 +11,32 @@ import org.springframework.stereotype.Component;
 public class PeminjamanEventListener {
 
     private final PeminjamanService service;
-    private final ObjectMapper objectMapper;
 
     public PeminjamanEventListener(PeminjamanService service, ObjectMapper objectMapper) {
+        // this.objectMapper = objectMapper;
         this.service = service;
-        this.objectMapper = objectMapper;
     }
+    // private final ObjectMapper objectMapper;
+
+    // @RabbitListener(queues = RabbitMQConfig.QUEUE)
+    // public void handlePeminjamanEvent(String message) {
+    //     try {
+    //         Peminjaman peminjaman = objectMapper.readValue(message, Peminjaman.class);
+    //         service.save(peminjaman);
+    //         System.out.println("📨 Event diterima dan disimpan ke DB Query: " + peminjaman);
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 
     @RabbitListener(queues = RabbitMQConfig.QUEUE)
-    public void handlePeminjamanEvent(String message) {
+    public void handlePeminjamanEvent(Peminjaman peminjaman) {
         try {
-            Peminjaman peminjaman = objectMapper.readValue(message, Peminjaman.class);
             service.save(peminjaman);
-            System.out.println("📥 Event diterima dan disimpan ke database Query: " + peminjaman);
+            System.out.println("📥 Event diterima dan disimpan ke DB Query: " + peminjaman);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 }
