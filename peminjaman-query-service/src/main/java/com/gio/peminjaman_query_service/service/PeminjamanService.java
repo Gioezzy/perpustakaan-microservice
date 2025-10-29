@@ -22,7 +22,7 @@ public class PeminjamanService {
         return repository.findById(id);
     }
 
-    public Peminjaman save(Peminjaman peminjaman) {
-        return repository.save(peminjaman);
+    public void save(Peminjaman peminjaman) {
+        repository.save(peminjaman);
     }
 }
