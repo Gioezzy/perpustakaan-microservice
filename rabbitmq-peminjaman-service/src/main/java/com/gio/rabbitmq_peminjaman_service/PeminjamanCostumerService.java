@@ -43,19 +43,21 @@ public class PeminjamanCostumerService {
         }
 
         try {
+            // Adding a delay to mitigate race condition
+            Thread.sleep(2000);
+
             ServiceInstance serviceInstance = discoveryClient
                     .getInstances("API-GATEWAY-PUSTAKA")
                     .get(0);
 
             String url = serviceInstance.getUri() + "/api/peminjaman/query/" + peminjaman.getId() + "/detail";
-            ResponseTemplate[] response = restTemplate.getForObject(url, ResponseTemplate[].class);
+            ResponseTemplate dataPeminjaman = restTemplate.getForObject(url, ResponseTemplate.class);
 
-            if (response == null || response.length == 0) {
+            if (dataPeminjaman == null) {
                 System.err.println("⚠️ Data peminjaman tidak ditemukan untuk ID: " + peminjaman.getId());
                 return;
             }
 
-            ResponseTemplate dataPeminjaman = response[0];
             Anggota anggota = dataPeminjaman.getAnggota();
             String email = anggota.getEmail();
 
