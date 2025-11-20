@@ -60,8 +60,27 @@ perpustakaan-microservice/
 
 ## 📌 Endpoint & Contoh Request
 
+### 🌐 Akses Melalui API Gateway (Direkomendasikan)
+**Base URL: `http://localhost:9000/`**
+
+Semua endpoint dapat diakses melalui API Gateway tanpa perlu mengingat port masing-masing service:
+
+| Service | Endpoint Gateway | Service Asli |
+|---------|------------------|--------------|
+| Anggota | `http://localhost:9000/api/anggota/**` | `http://localhost:8081/` |
+| Buku | `http://localhost:9000/api/buku/**` | `http://localhost:8082/` |
+| Peminjaman | `http://localhost:9000/api/peminjaman/**` | `http://localhost:8083/` |
+| Pengembalian | `http://localhost:9000/api/pengembalian/**` | `http://localhost:8084/` |
+
+**Contoh penggunaan:**
+- GET semua anggota: `GET http://localhost:9000/api/anggota`
+- POST buku baru: `POST http://localhost:9000/api/buku`
+- GET detail peminjaman: `GET http://localhost:9000/api/peminjaman/detail/{id}`
+
+---
+
 ### 1. Anggota Service  
-Base URL `http://localhost:8081/`
+Base URL `http://localhost:8081/` (atau melalui gateway: `http://localhost:9000/api/anggota/`)
 | Method | Endpoint                  | Deskripsi                        |
 |--------|---------------------------|----------------------------------|
 | POST   | `/api/anggota`              | Membuat anggota baru               |
@@ -74,7 +93,7 @@ Base URL `http://localhost:8081/`
 ```json
 {
   "nim": "20250101",
-  "nama": "Giovanni Yuda",
+  "nama": "Darul Febri",
   "alamat": "Jl. Merdeka No. 123",
   "email" : "youremail@example.com"
   "jenis_kelamin": "Laki-laki"
@@ -84,7 +103,7 @@ Base URL `http://localhost:8081/`
 ---
 
 ### 2. Buku Service  
-Base URL `http://localhost:8082/`
+Base URL `http://localhost:8082/` (atau melalui gateway: `http://localhost:9000/api/buku/`)
 | Method | Endpoint                  | Deskripsi                        |
 |--------|---------------------------|----------------------------------|
 | POST   | `/api/buku`              | Membuat buku baru               |
@@ -105,7 +124,7 @@ Base URL `http://localhost:8082/`
 ---
 
 ### 3. Peminjaman Service  
-Base URL `http://localhost:8083/`
+Base URL `http://localhost:8083/` (atau melalui gateway: `http://localhost:9000/api/peminjaman/`)
 | Method | Endpoint                  | Deskripsi                        |
 |--------|---------------------------|----------------------------------|
 | POST   | `/api/peminjaman`              | Membuat peminjaman baru               |
@@ -126,7 +145,7 @@ Base URL `http://localhost:8083/`
 ---
 
 ### 4. Pengembalian Service  
-Base URL `http://localhost:8084/`
+Base URL `http://localhost:8084/` (atau melalui gateway: `http://localhost:9000/api/pengembalian/`)
 | Method | Endpoint                  | Deskripsi                        |
 |--------|---------------------------|----------------------------------|
 | POST   | `/api/pengembalian`              | Membuat pengembalian baru               |
