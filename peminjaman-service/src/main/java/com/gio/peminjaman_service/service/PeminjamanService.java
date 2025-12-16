@@ -79,11 +79,10 @@ public class PeminjamanService {
 
   public Peminjaman createPeminjaman(Peminjaman peminjaman){
     Peminjaman savedPeminjaman = peminjamanRepository.save(peminjaman);
-    rabbitTemplate.convertAndSend(exchange, routingKey, savedPeminjaman);
+    // rabbitTemplate.convertAndSend(exchange, routingKey, savedPeminjaman);
 
-    log.info("📩 Message sent to exchange [{}] with routing key [{}], Payload: {}", 
-                exchange, routingKey, savedPeminjaman);
-                
+    // log.info("📩 Message sent to exchange [{}] with routing key [{}], Payload: {}", 
+    //             exchange, routingKey, savedPeminjaman);
     return savedPeminjaman;
   }
 

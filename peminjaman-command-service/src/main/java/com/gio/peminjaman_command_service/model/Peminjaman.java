@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "peminjamans")
-public class Peminjaman {
+public class Peminjaman implements java.io.Serializable {
   
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

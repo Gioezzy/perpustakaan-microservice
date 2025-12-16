@@ -79,8 +79,8 @@ public class PengembalianService {
 
         Pengembalian saved = pengembalianRepository.save(pengembalian);
 
-        rabbitTemplate.convertAndSend(exchange, routingKey, saved);
-        log.info("Message sent to exchange [{}] with routing key [{}], Payload: {}", exchange, routingKey, saved);
+        // rabbitTemplate.convertAndSend(exchange, routingKey, saved);
+        // log.info("Message sent to exchange [{}] with routing key [{}], Payload: {}", exchange, routingKey, saved);
 
         return saved;
     }

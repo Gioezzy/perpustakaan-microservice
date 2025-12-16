@@ -10,11 +10,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.gio.rabbitmq_peminjaman_service.vo.Anggota;
 import com.gio.rabbitmq_peminjaman_service.vo.Peminjaman;
-import com.gio.rabbitmq_peminjaman_service.vo.ResponseTemplate;
 
 @Service
 public class PeminjamanCostumerService {
@@ -32,7 +32,6 @@ public class PeminjamanCostumerService {
     private String from;
 
     @RabbitListener(queues = "${app.rabbitmq-peminjaman.queue}")
-
     @Transactional
     public void receiveOrder(@Payload Peminjaman peminjaman) {
         System.out.println("📩 Received message from queue with ID: " + peminjaman.getId());
@@ -43,33 +42,60 @@ public class PeminjamanCostumerService {
         }
 
         try {
-            // Adding a delay to mitigate race condition
-            Thread.sleep(2000);
+            Thread.sleep(3000);
 
-            ServiceInstance serviceInstance = discoveryClient
+
+            ServiceInstance gatewayInstance = discoveryClient
                     .getInstances("API-GATEWAY-PUSTAKA")
-                    .get(0);
+                    .stream()
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Gateway service not found!"));
 
-            String url = serviceInstance.getUri() + "/api/peminjaman/query/" + peminjaman.getId() + "/detail";
-            ResponseTemplate dataPeminjaman = restTemplate.getForObject(url, ResponseTemplate.class);
+            String urlPeminjaman = gatewayInstance.getUri() + "/api/peminjaman/query/" + peminjaman.getId() + "/detail";
+            Peminjaman dataPeminjaman = null;
+
+            int retryCount = 0;
+            while (retryCount < 3) {
+                try {
+                    dataPeminjaman = restTemplate.getForObject(urlPeminjaman, Peminjaman.class);
+                    if (dataPeminjaman != null) break;
+                } catch (HttpClientErrorException.NotFound e) {
+                    System.out.println("⚠️ Data peminjaman belum tersedia, retry ke-" + (retryCount + 1));
+                    Thread.sleep(2000);
+                }
+                retryCount++;
+            }
 
             if (dataPeminjaman == null) {
-                System.err.println("⚠️ Data peminjaman tidak ditemukan untuk ID: " + peminjaman.getId());
+                System.err.println("❌ Data peminjaman tidak ditemukan untuk ID: " + peminjaman.getId());
                 return;
             }
 
-            Anggota anggota = dataPeminjaman.getAnggota();
-            String email = anggota.getEmail();
+            String urlAnggota = gatewayInstance.getUri() + "/api/anggota/" + dataPeminjaman.getAnggotaId();
+            Anggota anggota = restTemplate.getForObject(urlAnggota, Anggota.class);
 
+            if (anggota == null) {
+                System.err.println("❌ Data anggota tidak ditemukan untuk ID: " + dataPeminjaman.getAnggotaId());
+                return;
+            }
+
+            String email = anggota.getEmail();
             System.out.println("✉️ Sending notification to email: " + email);
 
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setFrom(from);
             mailMessage.setTo(email);
             mailMessage.setSubject("Konfirmasi Peminjaman Buku Berhasil");
-            mailMessage.setText(dataPeminjaman.sendMailMessage());
-            javaMailSender.send(mailMessage);
+            mailMessage.setText(
+                "Halo " + anggota.getNama() + ",\n\n" +
+                "Peminjaman buku Anda telah berhasil diproses dengan rincian berikut:\n" +
+                "📘 ID Peminjaman: " + dataPeminjaman.getId() + "\n" +
+                "📅 Tanggal Peminjaman: " + dataPeminjaman.getTanggalPinjam() + "\n" +
+                "📆 Tanggal Kembali: " + dataPeminjaman.getTanggalKembali() + "\n\n" +
+                "Terima kasih telah menggunakan layanan kami.\n\nSalam,\nTim Perpustakaan"
+            );
 
+            javaMailSender.send(mailMessage);
             System.out.println("✅ Email berhasil dikirim ke " + email);
 
         } catch (Exception e) {
