@@ -1,9 +1,12 @@
 package com.gio.rabbitmq_pengembalian_service.vo;
 
+import java.util.Date;
+
 public class Pengembalian {
   private Long id;
   private Long peminjamanId;
-  private String tanggalDikembalikan;
+  @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd")
+  private Date tanggalDikembalikan;
   private String terlambat;
   private Double denda;
   
@@ -11,7 +14,7 @@ public class Pengembalian {
     
   }
 
-  public Pengembalian(Long id, Long peminjamanId, String tanggalDikembalikan, String terlambat, Double denda) {
+  public Pengembalian(Long id, Long peminjamanId, Date tanggalDikembalikan, String terlambat, Double denda) {
     this.id = id;
     this.peminjamanId = peminjamanId;
     this.tanggalDikembalikan = tanggalDikembalikan;
@@ -35,11 +38,11 @@ public class Pengembalian {
     this.peminjamanId = peminjamanId;
   }
 
-  public String getTanggalDikembalikan() {
+  public Date getTanggalDikembalikan() {
     return tanggalDikembalikan;
   }
 
-  public void setTanggalDikembalikan(String tanggalDikembalikan) {
+  public void setTanggalDikembalikan(Date tanggalDikembalikan) {
     this.tanggalDikembalikan = tanggalDikembalikan;
   }
 
