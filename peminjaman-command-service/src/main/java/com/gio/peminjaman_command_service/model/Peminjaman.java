@@ -13,7 +13,9 @@ public class Peminjaman implements java.io.Serializable {
   private Long id;
   private Long bukuId;
   private Long anggotaId;
-  private String tanggalPinjam;
-  private String tanggalKembali;
+  @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd")
+  private java.util.Date tanggalPinjam;
+  @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd")
+  private java.util.Date tanggalKembali;
 
 }
