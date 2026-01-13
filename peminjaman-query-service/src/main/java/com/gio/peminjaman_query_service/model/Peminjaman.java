@@ -21,7 +21,9 @@ public class Peminjaman {
     private Long id;
     private Long bukuId;
     private Long anggotaId;
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd")
     private Date tanggalPinjam;
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd")
     private Date tanggalKembali;
 
     @Override

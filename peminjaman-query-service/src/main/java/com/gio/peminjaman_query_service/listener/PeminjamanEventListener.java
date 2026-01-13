@@ -35,6 +35,7 @@ public class PeminjamanEventListener {
             service.save(peminjaman);
             System.out.println("📥 Event diterima dan disimpan ke DB Query: " + peminjaman);
         } catch (Exception e) {
+            System.err.println("❌ Error processing Peminjaman Event: " + e.getMessage());
             e.printStackTrace();
         }
     }
