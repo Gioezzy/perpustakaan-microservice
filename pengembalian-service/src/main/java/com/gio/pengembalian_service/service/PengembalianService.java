@@ -65,17 +65,17 @@ public class PengembalianService {
             throw new RuntimeException("Data peminjaman tidak ditemukan untuk id: " + pengembalian.getPeminjamanId());
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-        Date tanggalKembali = sdf.parse(peminjaman.getTanggalKembali());
-        Date tanggalDikembalikan = sdf.parse(pengembalian.getTanggalDikembalikan());
+        Date tanggalKembali = peminjaman.getTanggalKembali();
+        Date tanggalDikembalikan = pengembalian.getTanggalDikembalikan();
 
         long kembali = tanggalDikembalikan.getTime() - tanggalKembali.getTime();
-        long jumlahHari = kembali < 0 ? 0 : Math.abs(kembali);
-        long terlambat = TimeUnit.DAYS.convert(jumlahHari, TimeUnit.MILLISECONDS);
-        double denda = terlambat * 1000;
+        long jumlahHari = kembali < 0 ? 0 : TimeUnit.DAYS.convert(kembali, TimeUnit.MILLISECONDS);
+        double denda = jumlahHari * 1000;
 
-        pengembalian.setTerlambat(terlambat + " Hari");
+        pengembalian.setTerlambat(jumlahHari + " Hari");
         pengembalian.setDenda(denda);
+
+
 
         Pengembalian saved = pengembalianRepository.save(pengembalian);
 

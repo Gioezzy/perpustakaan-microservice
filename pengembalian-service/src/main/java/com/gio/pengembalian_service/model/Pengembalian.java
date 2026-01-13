@@ -15,7 +15,8 @@ public class Pengembalian {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private Long peminjamanId;
-  private String tanggalDikembalikan;
+  @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd")
+  private java.util.Date tanggalDikembalikan;
   private String terlambat;
   private Double denda;
 
