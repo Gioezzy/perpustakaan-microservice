@@ -1,15 +1,28 @@
 pipeline {
-    agent any
+
+    options {
+        timestamps()
+        disableConcurrentBuilds()
+    }
 
     stages {
+
         stage('Checkout') {
+            agent any
             steps {
                 checkout scm
             }
         }
 
-        stage('Build Services') {
-            parallel {
+        stage('Build Services (Maven)') {
+            agent {
+                docker {
+                    image 'maven:3.9.6-eclipse-temurin-17'
+                    args '--memory=1g --memory-swap=1g'
+                }
+            }
+            parallel failFast true, {
+
                 stage('Anggota Service') {
                     steps {
                         dir('anggota-service') {
@@ -18,6 +31,7 @@ pipeline {
                         }
                     }
                 }
+
                 stage('Buku Service') {
                     steps {
                         dir('buku-service') {
@@ -26,6 +40,7 @@ pipeline {
                         }
                     }
                 }
+
                 stage('Peminjaman Command') {
                     steps {
                         dir('peminjaman-command-service') {
@@ -34,6 +49,7 @@ pipeline {
                         }
                     }
                 }
+
                 stage('Peminjaman Query') {
                     steps {
                         dir('peminjaman-query-service') {
@@ -42,6 +58,7 @@ pipeline {
                         }
                     }
                 }
+
                 stage('Pengembalian Service') {
                     steps {
                         dir('pengembalian-service') {
@@ -50,6 +67,7 @@ pipeline {
                         }
                     }
                 }
+
                 stage('RabbitMQ Peminjaman') {
                     steps {
                         dir('rabbitmq-peminjaman-service') {
@@ -58,6 +76,7 @@ pipeline {
                         }
                     }
                 }
+
                 stage('RabbitMQ Pengembalian') {
                     steps {
                         dir('rabbitmq-pengembalian-service') {
@@ -66,6 +85,7 @@ pipeline {
                         }
                     }
                 }
+
                 stage('API Gateway') {
                     steps {
                         dir('api-gateway-pustaka') {
@@ -74,6 +94,20 @@ pipeline {
                         }
                     }
                 }
+            }
+        }
+
+        stage('Docker Build') {
+            agent any
+            steps {
+                sh 'docker compose build'
+            }
+        }
+
+        stage('Deploy') {
+            agent any
+            steps {
+                sh 'docker compose up -d'
             }
         }
     }

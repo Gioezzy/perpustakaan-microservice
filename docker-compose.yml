@@ -1,382 +1,133 @@
-#version: '3.8'
-
 services:
+
   server-eureka:
-    image: steeltoeoss/eureka-server
+    build: ./eureka-server
     container_name: server-eureka
     ports:
       - "8761:8761"
-    environment:
-      JAVA_OPTS: "-Xmx192m -Xss256k"
-    networks:                                                                                                         
+    networks:
       - microservices-network
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8761"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    environment:
+      JAVA_TOOL_OPTIONS: "-Xms128m -Xmx192m"
     mem_limit: 256m
+
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: rabbitmq
     ports:
-      - "5672:5672" 
-      - "15672:15672" 
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: password
-    networks:
-      - microservices-network
     mem_limit: 256m
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    networks: [microservices-network]
 
   anggota-service:
     build: ./anggota-service
-    container_name: anggota-service
-    ports:
-      - "8081:8081"
+    ports: ["8081:8081"]
     environment:
       JAVA_TOOL_OPTIONS: "-Xms64m -Xmx128m"
       SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:h2:file:/data/anggota
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://server-eureka:8761/eureka/
-      SPRING_RABBITMQ_HOST: rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
-      SPRING_RABBITMQ_USERNAME: admin
-      SPRING_RABBITMQ_PASSWORD: password
-      
-      SPRING_DATASOURCE_URL: jdbc:h2:file:/app/data/anggota;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
-      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.h2.Driver
-      SPRING_DATASOURCE_USERNAME: sa
-      SPRING_DATASOURCE_PASSWORD: password
-      
-      SPRING_H2_CONSOLE_ENABLED: "true"
-      SPRING_H2_CONSOLE_PATH: /h2-console
-      
-      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.H2Dialect
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_SHOW_SQL: "false"
-      
-      SERVER_PORT: 8081
     volumes:
       - anggota_data:/data
-    depends_on:
-      - server-eureka
-      - rabbitmq
-    networks:
-      - microservices-network
-    mem_limit: 200m
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/actuator/health"]
-      interval: 45s
-      timeout: 10s
-      retries: 3
+    mem_limit: 256m
+    networks: [microservices-network]
 
   buku-service:
     build: ./buku-service
-    container_name: buku-service
-    ports:
-      - "8082:8082"
+    ports: ["8082:8082"]
     environment:
       JAVA_TOOL_OPTIONS: "-Xms64m -Xmx128m"
-      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:h2:file:/data/buku
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://server-eureka:8761/eureka/
-      SPRING_RABBITMQ_HOST: rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
-      SPRING_RABBITMQ_USERNAME: admin
-      SPRING_RABBITMQ_PASSWORD: password
-      
-      SPRING_DATASOURCE_URL: jdbc:h2:file:/app/data/buku;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
-      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.h2.Driver
-      SPRING_DATASOURCE_USERNAME: sa
-      SPRING_DATASOURCE_PASSWORD: password
-      
-      SPRING_H2_CONSOLE_ENABLED: "true"
-      SPRING_H2_CONSOLE_PATH: /h2-console
-      
-      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.H2Dialect
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_SHOW_SQL: "false"
-      
-      SERVER_PORT: 8082
     volumes:
       - buku_data:/data
-    depends_on:
-      - server-eureka
-      - rabbitmq
-    networks:
-      - microservices-network
-    mem_limit: 200m
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8082/actuator/health"]
-      interval: 45s
-      timeout: 10s
-      retries: 3
+    mem_limit: 256m
+    networks: [microservices-network]
 
   peminjaman-command-service:
     build: ./peminjaman-command-service
-    container_name: peminjaman-command-service
-    ports:
-      - "8087:8087"
+    ports: ["8087:8087"]
     environment:
       JAVA_TOOL_OPTIONS: "-Xms64m -Xmx128m"
-      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:h2:file:/data/peminjaman_command
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://server-eureka:8761/eureka/
-      SPRING_RABBITMQ_HOST: rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
-      SPRING_RABBITMQ_USERNAME: admin
-      SPRING_RABBITMQ_PASSWORD: password
-      
-      SPRING_DATASOURCE_URL: jdbc:h2:file:/app/data/peminjaman_command;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
-      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.h2.Driver
-      SPRING_DATASOURCE_USERNAME: sa
-      SPRING_DATASOURCE_PASSWORD: password
-      
-      SPRING_H2_CONSOLE_ENABLED: "true"
-      SPRING_H2_CONSOLE_PATH: /h2-console
-      
-      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.H2Dialect
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_SHOW_SQL: "false"
-      
-      ANGGOTA_SERVICE_URL: http://anggota-service:8081
-      BUKU_SERVICE_URL: http://buku-service:8082
     volumes:
       - peminjaman_command_data:/data
-    depends_on:
-      - server-eureka
-      - rabbitmq
-      - anggota-service
-      - buku-service
-    networks:
-      - microservices-network
-    mem_limit: 200m
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8087/actuator/health"]
-      interval: 45s
-      timeout: 10s
-      retries: 3
+    mem_limit: 256m
+    networks: [microservices-network]
 
   peminjaman-query-service:
     build: ./peminjaman-query-service
-    container_name: peminjaman-query-service
-    ports:
-      - "8088:8088"
+    ports: ["8088:8088"]
     environment:
       JAVA_TOOL_OPTIONS: "-Xms64m -Xmx128m"
-      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:h2:file:/data/peminjaman_query
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://server-eureka:8761/eureka/
-      SPRING_RABBITMQ_HOST: rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
-      SPRING_RABBITMQ_USERNAME: admin
-      SPRING_RABBITMQ_PASSWORD: password
-      
-      SPRING_DATASOURCE_URL: jdbc:h2:file:/app/data/peminjaman_query;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
-      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.h2.Driver
-      SPRING_DATASOURCE_USERNAME: sa
-      SPRING_DATASOURCE_PASSWORD: password
-      
-      SPRING_H2_CONSOLE_ENABLED: "true"
-      SPRING_H2_CONSOLE_PATH: /h2-console
-      
-      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.H2Dialect
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_SHOW_SQL: "false"
     volumes:
       - peminjaman_query_data:/data
-    depends_on:
-      - server-eureka
-      - rabbitmq
-    networks:
-      - microservices-network
-    mem_limit: 200m
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8088/actuator/health"]
-      interval: 45s
-      timeout: 10s
-      retries: 3
+    mem_limit: 256m
+    networks: [microservices-network]
 
   pengembalian-service:
     build: ./pengembalian-service
-    container_name: pengembalian-service
-    ports:
-      - "8084:8084"
+    ports: ["8084:8084"]
     environment:
       JAVA_TOOL_OPTIONS: "-Xms64m -Xmx128m"
-      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:h2:file:/data/pengembalian
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://server-eureka:8761/eureka/
-      SPRING_RABBITMQ_HOST: rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
-      SPRING_RABBITMQ_USERNAME: admin
-      SPRING_RABBITMQ_PASSWORD: password
-      
-      SPRING_DATASOURCE_URL: jdbc:h2:file:/app/data/pengembalian;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
-      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.h2.Driver
-      SPRING_DATASOURCE_USERNAME: sa
-      SPRING_DATASOURCE_PASSWORD: password
-      
-      SPRING_H2_CONSOLE_ENABLED: "true"
-      SPRING_H2_CONSOLE_PATH: /h2-console
-      
-      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.H2Dialect
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_SHOW_SQL: "false"
-      
-      SERVER_PORT: 8084
     volumes:
       - pengembalian_data:/data
-    depends_on:
-      - server-eureka
-      - rabbitmq
-    networks:
-      - microservices-network
-    mem_limit: 200m
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8084/actuator/health"]
-      interval: 45s
-      timeout: 10s
-      retries: 3
-
-  rabbitmq-peminjaman-service:
-    build: ./rabbitmq-peminjaman-service
-    container_name: rabbitmq-peminjaman-service
-    ports:
-      - "8085:8085"
-    environment:
-      JAVA_TOOL_OPTIONS: "-Xms64m -Xmx128m"
-      SPRING_PROFILES_ACTIVE: docker
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://server-eureka:8761/eureka/
-      SPRING_RABBITMQ_HOST: rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
-      SPRING_RABBITMQ_USERNAME: admin
-      SPRING_RABBITMQ_PASSWORD: password
-      SERVER_PORT: 8085
-    depends_on:
-      - server-eureka
-      - rabbitmq
-    networks:
-      - microservices-network
-    mem_limit: 200m
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8085/actuator/health"]
-      interval: 45s
-      timeout: 10s
-      retries: 3
-
-  rabbitmq-pengembalian-service:
-    build: ./rabbitmq-pengembalian-service
-    container_name: rabbitmq-pengembalian-service
-    ports:
-      - "8086:8086"
-    environment:
-      JAVA_TOOL_OPTIONS: "-Xms64m -Xmx128m"
-      SPRING_PROFILES_ACTIVE: docker
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://server-eureka:8761/eureka/
-      SPRING_RABBITMQ_HOST: rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
-      SPRING_RABBITMQ_USERNAME: admin
-      SPRING_RABBITMQ_PASSWORD: password
-      SERVER_PORT: 8086
-    depends_on:
-      - server-eureka
-      - rabbitmq
-    networks:
-      - microservices-network
-    mem_limit: 200m
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8086/actuator/health"]
-      interval: 45s
-      timeout: 10s
-      retries: 3
+    mem_limit: 256m
+    networks: [microservices-network]
 
   api-gateway-pustaka:
     build: ./api-gateway-pustaka
-    container_name: api-gateway-pustaka
-    ports:
-      - "9000:9000"
+    ports: ["9000:9000"]
     environment:
       JAVA_TOOL_OPTIONS: "-Xms64m -Xmx128m"
-      SPRING_PROFILES_ACTIVE: docker
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://server-eureka:8761/eureka/
-      SERVER_PORT: 9000
-    depends_on:
-      - server-eureka
-      - anggota-service
-      - buku-service
-      - peminjaman-command-service
-      - pengembalian-service
-    networks:
-      - microservices-network
-    mem_limit: 200m
+    mem_limit: 256m
+    networks: [microservices-network]
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.10
-    container_name: elasticsearch
     environment:
-      - node.name=elasticsearch
       - discovery.type=single-node
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
-    ports:
-      - "9200:9200"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    mem_limit: 512m
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    mem_limit: 1024m
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
-    networks:
-      - microservices-network
+    networks: [microservices-network]
 
   logstash:
     image: docker.elastic.co/logstash/logstash:7.17.10
-    container_name: logstash
-    ports:
-      - "5000:5000/tcp"
-      - "5000:5000/udp"
-      - "9600:9600"
+    mem_limit: 256m
     environment:
       LS_JAVA_OPTS: "-Xmx128m -Xms128m"
     volumes:
       - ./logstash/pipeline:/usr/share/logstash/pipeline
-    depends_on:
-      - elasticsearch
-    mem_limit: 256m
-    networks:
-      - microservices-network
+    networks: [microservices-network]
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.17.10
-    container_name: kibana
-    ports:
-      - "5601:5601"
-    environment:
-      ELASTICSEARCH_URL: http://elasticsearch:9200
-      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
-    depends_on:
-      - elasticsearch
-    mem_limit: 256m
-    networks:
-      - microservices-network
+    mem_limit: 512m
+    ports: ["5601:5601"]
+    networks: [microservices-network]
 
   jenkins:
     image: jenkins/jenkins:lts
-    container_name: jenkins
     ports:
       - "8080:8080"
-      - "50000:50000"
-    environment:
-      - JAVA_OPTS=-Djava.awt.headless=true
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - microservices-network
+    mem_limit: 1024m
+    networks: [microservices-network]
 
 volumes:
   anggota_data:
