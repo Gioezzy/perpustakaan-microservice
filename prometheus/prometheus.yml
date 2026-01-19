@@ -1,0 +1,42 @@
+global:
+  scrape_interval: 10s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'server-eureka'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['server-eureka:8761']
+
+  - job_name: 'api-gateway-pustaka'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['api-gateway-pustaka:9000']
+
+  - job_name: 'anggota-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['anggota-service:8081']
+
+  - job_name: 'buku-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['buku-service:8082']
+
+  - job_name: 'peminjaman-command-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['peminjaman-command-service:8087']
+
+  - job_name: 'peminjaman-query-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['peminjaman-query-service:8088']
+
+  - job_name: 'pengembalian-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['pengembalian-service:8084']
