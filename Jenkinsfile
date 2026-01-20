@@ -1,5 +1,7 @@
 pipeline {
 
+    agent none
+
     options {
         timestamps()
         disableConcurrentBuilds()
@@ -21,7 +23,8 @@ pipeline {
                     args '--memory=1g --memory-swap=1g'
                 }
             }
-            parallel failFast true, {
+
+            parallel {
 
                 stage('Anggota Service') {
                     steps {
@@ -118,3 +121,4 @@ pipeline {
         }
     }
 }
+

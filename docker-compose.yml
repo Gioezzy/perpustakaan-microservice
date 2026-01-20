@@ -120,8 +120,15 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:7.17.10
     mem_limit: 512m
-    ports: ["5601:5601"]
-    networks: [microservices-network]
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - microservices-network
+
 
   jenkins:
     image: jenkins/jenkins:lts
