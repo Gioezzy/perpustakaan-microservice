@@ -108,9 +108,17 @@ pipeline {
     }
     post {
         always {
-            node('any') {
-                cleanWs()
+            script {
+                node {
+                    cleanWs()
+                }
             }
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+        success {
+            echo 'Pipeline succeeded!'
         }
     }
 }
