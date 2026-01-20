@@ -1,118 +1,104 @@
 pipeline {
-
     agent none
-
     options {
         timestamps()
         disableConcurrentBuilds()
     }
-
     stages {
-
         stage('Checkout') {
             agent any
             steps {
                 checkout scm
             }
         }
-
         stage('Build Services (Maven)') {
-
             parallel {
-
                 stage('Anggota Service') {
-                    agent {
-                        docker {
-                            image 'maven:3.9.6-eclipse-temurin-17'
-                        }
-                    }
+                    agent any
                     steps {
-                        dir('anggota-service') {
-                            sh 'chmod +x mvnw'
-                            sh './mvnw clean package -DskipTests'
+                        script {
+                            docker.image('maven:3.9.6-eclipse-temurin-17').inside {
+                                dir('anggota-service') {
+                                    sh 'chmod +x mvnw'
+                                    sh './mvnw clean package -DskipTests'
+                                }
+                            }
                         }
                     }
                 }
-
                 stage('Buku Service') {
-                    agent {
-                        docker {
-                            image 'maven:3.9.6-eclipse-temurin-17'
-                        }
-                    }
+                    agent any
                     steps {
-                        dir('buku-service') {
-                            sh 'chmod +x mvnw'
-                            sh './mvnw clean package -DskipTests'
+                        script {
+                            docker.image('maven:3.9.6-eclipse-temurin-17').inside {
+                                dir('buku-service') {
+                                    sh 'chmod +x mvnw'
+                                    sh './mvnw clean package -DskipTests'
+                                }
+                            }
                         }
                     }
                 }
-
                 stage('Peminjaman Command') {
-                    agent {
-                        docker {
-                            image 'maven:3.9.6-eclipse-temurin-17'
-                        }
-                    }
+                    agent any
                     steps {
-                        dir('peminjaman-command-service') {
-                            sh 'chmod +x mvnw'
-                            sh './mvnw clean package -DskipTests'
+                        script {
+                            docker.image('maven:3.9.6-eclipse-temurin-17').inside {
+                                dir('peminjaman-command-service') {
+                                    sh 'chmod +x mvnw'
+                                    sh './mvnw clean package -DskipTests'
+                                }
+                            }
                         }
                     }
                 }
-
                 stage('Peminjaman Query') {
-                    agent {
-                        docker {
-                            image 'maven:3.9.6-eclipse-temurin-17'
-                        }
-                    }
+                    agent any
                     steps {
-                        dir('peminjaman-query-service') {
-                            sh 'chmod +x mvnw'
-                            sh './mvnw clean package -DskipTests'
+                        script {
+                            docker.image('maven:3.9.6-eclipse-temurin-17').inside {
+                                dir('peminjaman-query-service') {
+                                    sh 'chmod +x mvnw'
+                                    sh './mvnw clean package -DskipTests'
+                                }
+                            }
                         }
                     }
                 }
-
                 stage('Pengembalian Service') {
-                    agent {
-                        docker {
-                            image 'maven:3.9.6-eclipse-temurin-17'
-                        }
-                    }
+                    agent any
                     steps {
-                        dir('pengembalian-service') {
-                            sh 'chmod +x mvnw'
-                            sh './mvnw clean package -DskipTests'
+                        script {
+                            docker.image('maven:3.9.6-eclipse-temurin-17').inside {
+                                dir('pengembalian-service') {
+                                    sh 'chmod +x mvnw'
+                                    sh './mvnw clean package -DskipTests'
+                                }
+                            }
                         }
                     }
                 }
-
                 stage('API Gateway') {
-                    agent {
-                        docker {
-                            image 'maven:3.9.6-eclipse-temurin-17'
-                        }
-                    }
+                    agent any
                     steps {
-                        dir('api-gateway-pustaka') {
-                            sh 'chmod +x mvnw'
-                            sh './mvnw clean package -DskipTests'
+                        script {
+                            docker.image('maven:3.9.6-eclipse-temurin-17').inside {
+                                dir('api-gateway-pustaka') {
+                                    sh 'chmod +x mvnw'
+                                    sh './mvnw clean package -DskipTests'
+                                }
+                            }
                         }
                     }
                 }
             }
         }
-
         stage('Docker Build') {
             agent any
             steps {
                 sh 'docker compose build'
             }
         }
-
         stage('Deploy') {
             agent any
             steps {
@@ -120,10 +106,11 @@ pipeline {
             }
         }
     }
-
     post {
         always {
-            cleanWs()
+            node('any') {
+                cleanWs()
+            }
         }
     }
 }
